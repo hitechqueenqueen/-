@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>港交所期權工作台</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#ffffff; --ink:#16213e; --muted:#66708a;
+    --line:#e4e9f2; --accent:#2f5fe0; --up:#d92626; --down:#159957;
+    --warn:#e08a00; --shadow:0 6px 22px rgba(30,50,100,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif}
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 22px 60px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+  h1{font-size:28px;margin:0 0 6px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:13px;line-height:1.7}
+  .badge{background:#eaf0ff;color:var(--accent);border:1px solid #cddaff;
+    padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+  .card.a2::before{background:#8b5cf6} .card.a3::before{background:var(--warn)}
+  .card.a4::before{background:#0ea5a4} .card.ph::before{background:#b8c0d0}
+  .card.lead{background:linear-gradient(135deg,#1e3a8a 0%,#2f5fe0 100%);border:none;color:#fff}
+  .card.lead::before{display:none}
+  .card.lead h2,.card.lead .desc{color:#fff}
+  .card.lead .desc{opacity:.85}
+  .lead-flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;font-size:12px}
+  .lead-flow .node{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);
+    padding:7px 11px;border-radius:8px}
+  .lead-flow .arw{opacity:.7}
+  .card h2{font-size:16px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .num{font-size:30px;font-weight:750;margin:14px 0 4px;letter-spacing:-.5px}
+  .unit{font-size:13px;font-weight:500;color:var(--muted);margin-left:4px}
+  .desc{font-size:12px;color:var(--muted);line-height:1.7}
+  .status{display:inline-block;font-size:11px;padding:3px 9px;border-radius:10px;
+    background:#e7f7ee;color:#12834a;margin-left:auto}
+  .status.err{background:#fdeaea;color:var(--up)}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+  th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;background:#fafbfe}
+  td.r,th.r{text-align:right}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .section{grid-column:1/-1;margin-top:10px}
+  .section h3{font-size:15px;margin:0 0 12px}
+  .flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:12px}
+  .flow .step{background:#f0f4ff;border:1px solid #d7e0fb;border-radius:9px;padding:9px 13px}
+  .flow .arrow{color:#9aa5bd}
+  .ph{opacity:.72}
+  .foot{margin-top:22px;font-size:11px;color:var(--muted);line-height:1.8;
+    border-top:1px solid var(--line);padding-top:14px}
+  .pill{display:inline-block;background:#f1f3f8;border-radius:8px;padding:4px 10px;margin:3px 4px 3px 0;font-size:11px}
+  .warnbox{background:#fff8e8;border:1px solid #f5dfa8;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.7;color:#7a5a10}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>港交所期權工作台</h1>
+      <div class="sub" id="subtitle">載入中…</div>
+    </div>
+    <div class="badge" id="badge">WorkBuddy · 手動觸發 · 公開數據源</div>
+  </header>
+
+  <div class="grid">
+    <div class="card lead section">
+      <h2>👑 葉皇后 · 主控（領軍） <span class="status" id="s_lead" style="background:rgba(255,255,255,.2);color:#fff">純調度</span></h2>
+      <div class="desc">用戶一句指令 → 拆解派發 → 監控超時 → 匯總。純調度型 Agent，唔做分析、唔畀投資建議。四位助手共用同一數據層。</div>
+      <div class="lead-flow">
+        <div class="node">用戶指令</div><span class="arw">→</span>
+        <div class="node">葉皇后拆解</div><span class="arw">→</span>
+        <div class="node">① 下載（先）</div><span class="arw">→</span>
+        <div class="node">②③④ 並行</div><span class="arw">→</span>
+        <div class="node">葉皇后匯總</div>
+      </div>
+      <div class="desc" style="margin-top:10px">調度順序：助手一必須先完成（係下游數據源）；二／三／四並行；任何一位失敗唔阻塞其餘，主控如實報告。</div>
+    </div>
+
+    <div class="card">
+      <h2>① 當日數據下載 <span class="status" id="s1">—</span></h2>
+      <div class="desc">六類指數期權日報 + 股票期權全日報 + 行使紀錄 + 兩張按金表，原始檔全部留底可核對。</div>
+      <div class="num" id="src_ok">—<span class="unit">/ 12 個數據源成功</span></div>
+      <table><thead><tr><th>數據源</th><th class="r">狀態</th></tr></thead><tbody id="src_table"></tbody></table>
+    </div>
+
+    <div class="card a2">
+      <h2>② 期權被行使狀況 <span class="status" id="s2">—</span></h2>
+      <div class="desc">股票期權當日行使明細，按行使股數排序。</div>
+      <div class="num" id="ex_total">—<span class="unit">股行使</span></div>
+      <div class="desc" id="ex_turn">—</div>
+      <table><thead><tr><th>正股</th><th class="r">行使價</th><th class="r">股數</th></tr></thead><tbody id="ex_table"></tbody></table>
+    </div>
+
+    <div class="card a3">
+      <h2>③ 按金需求 <span class="status" id="s3">—</span></h2>
+      <div class="desc">MERT 估算參考表覆蓋產品數；有持仓 CSV 時逐條估算。</div>
+      <div class="num" id="mg_count">—<span class="unit">個產品覆蓋</span></div>
+      <div class="warnbox" id="mg_note">—</div>
+      <div id="mg_hold"></div>
+    </div>
+
+    <div class="card a4">
+      <h2>④ 歷史波幅 / 引伸波幅 <span class="status" id="s4">—</span></h2>
+      <div class="desc">HV 由收市價對數收益年化計出；IV 取自 HKEX 日報公佈欄，兩者口徑不同。</div>
+      <table><thead><tr><th>指數</th><th class="r">HV20</th><th class="r">HV60</th><th class="r">IV 中位數</th></tr></thead><tbody id="vol_table"></tbody></table>
+      <div class="desc" id="vol_note" style="margin-top:10px">—</div>
+    </div>
+
+    <div class="card section">
+      <h3>數據流（手動觸發 · 幂等覆蓋）</h3>
+      <div class="flow">
+        <div class="step">手動執行 run_daily.py</div><span class="arrow">→</span>
+        <div class="step">下載 + 入校驗（大小/列頭）</div><span class="arrow">→</span>
+        <div class="step">raw/ 原始檔留底</div><span class="arrow">→</span>
+        <div class="step">parsed/ 結構化</div><span class="arrow">→</span>
+        <div class="step">四位助手分析</div><span class="arrow">→</span>
+        <div class="step">dashboard_data.json</div><span class="arrow">→</span>
+        <div class="step">本頁（清走舊版）</div>
+      </div>
+    </div>
+
+    <div class="card section ph">
+      <h3>預留模組位（未啟用）</h3>
+      <div id="placeholders"></div>
+      <div class="desc" style="margin-top:10px">呢三個位已經留好資料結構，日後要加唔使改主流程。</div>
+    </div>
+  </div>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<script>
+const DATA = /*__DASHBOARD_DATA__*/null;
+
+function n(x){ return x==null ? '—' : Number(x).toLocaleString('zh-Hant'); }
+function setStatus(id, ok){
+  const el=document.getElementById(id);
+  el.textContent = ok ? '就緒' : '無數據';
+  el.className = 'status' + (ok?'':' err');
+}
+function fmtPct(x){ return x==null?'—':Number(x).toFixed(1)+'%'; }
+
+function render(){
+  if(!DATA){ document.getElementById('subtitle').textContent='無數據，請先執行 run_daily.py'; return; }
+  const m=DATA.meta;
+  document.getElementById('subtitle').innerHTML =
+    `數據日期：<b>${m.date}</b> ｜ 生成：${m.run_at} ｜ 原始檔存於 hk_options_workbench/data/raw/（可抽樣核對）`;
+
+  // A1
+  const srcs=m.sources||{};
+  const entries=Object.entries(srcs);
+  const okCount=entries.filter(([k,v])=>v.status==='ok').length;
+  document.getElementById('src_ok').innerHTML=`${okCount}<span class="unit">/ ${entries.length} 個數據源成功</span>`;
+  setStatus('s1', okCount>0);
+  document.getElementById('src_table').innerHTML=entries.map(([k,v])=>
+    `<tr><td>${k} ${v.name||''}</td><td class="r ${v.status==='ok'?'down':'up'}">${v.status==='ok'?'OK':v.status}</td></tr>`
+  ).join('');
+
+  // A2
+  const e=DATA.assistant2_exercise||{};
+  setStatus('s2', !!e.available);
+  document.getElementById('ex_total').textContent=e.available?n(e.totals?.exercised_shares):'—';
+  document.getElementById('ex_turn').textContent=e.available
+    ? `總成交額 HK$${n(e.totals?.turnover)} ｜ ${n(e.series_count)} 條行使系列` : (e.reason||'');
+  document.getElementById('ex_table').innerHTML=(e.top_strikes||[]).slice(0,6).map(x=>
+    `<tr><td>${x.name||x.code||''}</td><td class="r">${n(x.strike)}</td><td class="r">${n(x.shares)}</td></tr>`
+  ).join('') || '<tr><td colspan="3">暫無明細</td></tr>';
+
+  // A3
+  const g=DATA.assistant3_margin||{};
+  setStatus('s3', !!g.available);
+  document.getElementById('mg_count').textContent=g.available?n(g.product_count):'—';
+  document.getElementById('mg_note').textContent=g.disclaimer||g.reason||'—';
+  const hr=g.holdings_result||[];
+  document.getElementById('mg_hold').innerHTML = hr.length
+    ? '<table><thead><tr><th>持倉</th><th class="r">估算按金範圍</th><th>狀態</th></tr></thead><tbody>'+
+      hr.map(x=>`<tr><td>${JSON.stringify(x.holding)}</td><td class="r">${x.margin_est_range?n(x.margin_est_range[0])+'–'+n(x.margin_est_range[1]):'—'}</td><td>${x.status}</td></tr>`).join('')+'</tbody></table>'
+    : `<div class="desc" style="margin-top:8px">${g.holdings_note||''}</div>`;
+
+  // A4
+  const v=DATA.assistant4_vol||{};
+  setStatus('s4', Object.keys(v.historical_volatility||{}).length>0);
+  const ivMap={}; (v.implied_volatility||[]).forEach(x=>ivMap[x.product]=x.iv_median_pct);
+  const nameMap={'%5EHSI':'恒指 (^HSI)','%5EHSCE':'國企指數 (^HSCE)'};
+  const ivOf={ '%5EHSI':ivMap['HSIO'], '%5EHSCE':ivMap['HHIO'] };
+  document.getElementById('vol_table').innerHTML=Object.entries(v.historical_volatility||{}).map(([k,x])=>
+    `<tr><td>${nameMap[k]||k}<br><span style="color:#8892a8">${x.last_date} 收市 ${n(x.last_close)}</span></td>`+
+    `<td class="r">${fmtPct(x.hv20_pct)}</td><td class="r">${fmtPct(x.hv60_pct)}</td>`+
+    `<td class="r up">${fmtPct(ivOf[k])}</td></tr>`
+  ).join('') || '<tr><td colspan="4">暫無數據</td></tr>';
+  document.getElementById('vol_note').textContent=v.note||'';
+
+  // 預留
+  document.getElementById('placeholders').innerHTML=Object.entries(DATA.placeholders||{})
+    .map(([k,t])=>`<span class="pill">${t}</span>`).join('');
+
+  // 頁尾
+  document.getElementById('foot').innerHTML =
+    `數據來源：香港交易所（HKEX）公開每日市場報告／MERT 按金估算表；Historical Volatility 由 Yahoo Finance chart API 之 ^HSI / ^HSCE 日線收市價計出。`+
+    `<br>免責：本頁只作公開資料整理與估算，不構成投資建議；MERT 為估算參考，非券商實收按金。市場有風險，投資需謹慎。`;
+}
+render();
+</script>
+</body>
+</html>
