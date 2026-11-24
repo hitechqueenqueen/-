@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>港交所期權工作台 · 助手五 期權策略分析儀</title>
+<style>
+:root{
+  --bg:#f5f7fb; --panel:#ffffff; --ink:#1a2233; --sub:#5b6779; --line:#dfe5ef;
+  --accent:#2f5fe0; --good:#0f9d6e; --bad:#dc3f4e; --warn:#e08b16; --mute:#8a94a6;
+  --grad:linear-gradient(135deg,#2f5fe0 0%,#7048d8 55%,#b83fa0 100%);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Microsoft JhengHei",-apple-system,sans-serif;font-size:14px;line-height:1.6}
+.wrap{max-width:1320px;margin:0 auto;padding:22px 20px 48px}
+header{background:var(--grad);color:#fff;border-radius:18px;padding:22px 26px;box-shadow:0 12px 30px rgba(47,95,224,.22);margin-bottom:18px}
+header h1{margin:0 0 4px;font-size:23px;letter-spacing:.5px}
+header .meta{opacity:.92;font-size:12.5px}
+.badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);padding:2px 10px;border-radius:99px;font-size:11.5px;margin-left:8px}
+.grid{display:grid;grid-template-columns:340px 1fr;gap:18px;align-items:start}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px 20px;box-shadow:0 4px 16px rgba(26,34,51,.05)}
+.card h2{margin:0 0 12px;font-size:15px;display:flex;align-items:center;gap:8px}
+.card h2::before{content:"";width:4px;height:16px;border-radius:4px;background:var(--accent)}
+.card.a5 h2::before{background:linear-gradient(180deg,#7048d8,#b83fa0)}
+label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px;font-weight:600}
+select,input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font-size:13px}
+select:focus,input:focus{outline:2px solid rgba(47,95,224,.25);border-color:var(--accent)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{margin-top:16px;width:100%;padding:11px;border:0;border-radius:10px;background:var(--grad);color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(112,72,216,.25)}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:#eef2fb;color:var(--accent);box-shadow:none;margin-top:8px}
+.market{background:linear-gradient(135deg,#eef3ff,#f6efff);border:1px solid #dfe4f7;border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.market b{font-size:16px;color:var(--accent)}
+.market .kv{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:12px;color:var(--sub)}
+.verdict{border-radius:16px;padding:20px 22px;color:#fff;background:var(--grad);margin-bottom:16px;box-shadow:0 10px 24px rgba(47,95,224,.2)}
+.verdict .g{font-size:26px;font-weight:800;letter-spacing:1px}
+.verdict .s{float:right;font-size:13px;opacity:.9}
+.verdict p{margin:8px 0 0;font-size:13px;opacity:.95}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.m{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:center}
+.m .lab{font-size:11.5px;color:var(--sub)}
+.m .val{font-size:21px;font-weight:800;margin-top:3px}
+.m.win .val{color:var(--good)} .m.loss .val{color:var(--bad)}
+.m.cap .val{color:var(--accent)} .m.vr .val{color:var(--warn)}
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:16px;overflow-x:auto}
+.legend{display:flex;gap:16px;font-size:11.5px;color:var(--sub);padding:4px 6px 8px}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--sub);font-weight:600;background:#f8fafd}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:11.5px;color:var(--sub);line-height:1.75}
+.disc{margin-top:14px;background:#fff8ec;border:1px solid #f3dcb4;border-radius:10px;padding:12px 14px;font-size:11.5px;color:#81602c}
+.src{font-size:11px;color:var(--mute);margin-top:10px}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;background:#eef2fb;color:var(--accent);font-size:11px;margin:2px 4px 2px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>港交所期權工作台 <span class="badge">助手五 · 期權策略分析和解說專員</span></h1>
+  <div class="meta" id="hdrMeta">載入中…</div>
+</header>
+
+<div class="grid">
+  <!-- 左：建倉指領輸入 -->
+  <div class="card a5">
+    <h2>建倉指領輸入</h2>
+    <div class="market" id="market"></div>
+    <label>策略</label>
+    <select id="strategy"></select>
+    <label>標的</label>
+    <select id="underlying"><option value="HSI">恒指 HSI</option><option value="HSCE">國指 HSCE</option></select>
+    <div class="row">
+      <div><label>行使價 1 (K1)</label><input id="k1" type="number" step="100"></div>
+      <div><label>行使價 2 (K2)</label><input id="k2" type="number" step="100"></div>
+    </div>
+    <div class="row">
+      <div><label>行使價 3 (K3)</label><input id="k3" type="number" step="100"></div>
+      <div><label>行使價 4 (K4)</label><input id="k4" type="number" step="100"></div>
+    </div>
+    <div class="row">
+      <div><label>到期天數</label><input id="dte" type="number" value="30" min="1" max="365"></div>
+      <div><label>可用本金 HKD</label><input id="capital" type="number" value="100000" step="10000"></div>
+    </div>
+    <button class="btn" onclick="run()">計算策略</button>
+    <button class="btn ghost" onclick="loadDemo()">載入示範（牛市認購價差）</button>
+    <p class="note" id="stratNote" style="margin-top:12px"></p>
+  </div>
+
+  <!-- 右：分析結果 -->
+  <div>
+    <div class="verdict" id="verdict">
+      <span class="s" id="vscore"></span>
+      <div class="g" id="vgrade">—</div>
+      <p id="vexplain">輸入建倉指領後，這裡會顯示四級評級與解說。</p>
+    </div>
+
+    <div class="metrics">
+      <div class="m win"><div class="lab">勝率（模型估算）</div><div class="val" id="mWin">—</div></div>
+      <div class="m loss"><div class="lab">敗率</div><div class="val" id="mLoss">—</div></div>
+      <div class="m vr"><div class="lab">值博率 (EV/風險)</div><div class="val" id="mVr">—</div></div>
+      <div class="m cap"><div class="lab">資金使用率</div><div class="val" id="mCap">—</div></div>
+    </div>
+
+    <div class="card">
+      <h2>到期損益圖（Payoff）</h2>
+      <div class="chart-box">
+        <div class="legend">
+          <span><i style="background:var(--good)"></i>獲利區</span>
+          <span><i style="background:var(--bad)"></i>虧損區</span>
+          <span><i style="background:var(--accent)"></i>現價</span>
+          <span><i style="background:var(--warn)"></i>盈虧平衡</span>
+        </div>
+        <svg id="payoff" viewBox="0 0 800 300" width="100%" height="280" role="img" aria-label="到期損益圖"></svg>
+      </div>
+      <table>
+        <thead><tr><th>指標</th><th>數值</th><th>口徑／來源</th></tr></thead>
+        <tbody id="metricTable"><tr><td colspan="3" style="color:var(--mute)">尚無計算結果</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>持倉 legs 與定價</h2>
+      <table>
+        <thead><tr><th>腳</th><th>類型</th><th>行使價</th><th class="num">理論權利金(點)</th><th class="num">金額 HKD</th><th>定價來源</th></tr></thead>
+        <tbody id="legTable"></tbody>
+      </table>
+      <p class="note" id="assumptions"></p>
+      <div class="disc">
+        <b>免責：</b>本分析只作公開數據整理同數理評級，<b>不構成投資建議</b>。勝率為模型估算（real-world lognormal），唔係預測；期權價為 Black-Scholes 理論價（σ=HKEX IV），非實際市場報價；未計股息、交易費、滑點同提前行使。評級分數為本工作台預設加權規則，非市場共識。市場有風險，投資需謹慎。
+      </div>
+      <div class="src" id="src"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const DATA = {"context": {"available": true, "underlying": "HSI", "label": "恒指", "spot": 22383.74, "spot_date": "2026-11-23", "hv20_pct": 21.59, "hv60_pct": 17.76, "iv_median_pct": 25.0, "iv_source_date": "最近可得 HKEX 日報（非 2026-11-23）", "mixed_date_warning": "現價/HV 為 2026-11-23（Yahoo），但 IV 因當日 HKEX 日報未出／下載失敗，仍沿用上一交易日 cache；兩者日期不同，評級只作參考，唔好當係同一日定價。", "multiplier": 50, "close_points": 246, "sources": ["Yahoo chart API yahoo_hsi（現價＋HV）", "HKEX HSIO 日報（IV 中位數）"]}, "demo": {"available": true, "strategy": {"key": "bull_call_spread", "name": "牛市認購價差（Bull Call Spread）", "outlook": "溫和看升", "note": "Max gain = K2−K1−淨權利金；Breakeven = K1+淨權利金（Investopedia CAL 口訣）", "legs": [{"cp": "C", "action": "B", "strike": 22500.0, "qty": 1, "premium_points": 619.51, "theory_premium_points": 619.51, "premium_source": "Black-Scholes（σ=HKEX IV，點數）"}, {"cp": "C", "action": "S", "strike": 23000.0, "qty": 1, "premium_points": 412.81, "theory_premium_points": 412.81, "premium_source": "Black-Scholes（σ=HKEX IV，點數）"}], "dte_days": 30}, "market": {"available": true, "underlying": "HSI", "label": "恒指", "spot": 22383.74, "spot_date": "2026-11-23", "hv20_pct": 21.59, "hv60_pct": 17.76, "iv_median_pct": 25.0, "iv_source_date": "最近可得 HKEX 日報（非 2026-11-23）", "mixed_date_warning": "現價/HV 為 2026-11-23（Yahoo），但 IV 因當日 HKEX 日報未出／下載失敗，仍沿用上一交易日 cache；兩者日期不同，評級只作參考，唔好當係同一日定價。", "multiplier": 50, "close_points": 246, "sources": ["Yahoo chart API yahoo_hsi（現價＋HV）", "HKEX HSIO 日報（IV 中位數）"]}, "metrics": {"spot": 22383.74, "breakeven_points": [22706.7], "max_profit_hkd": 14665.0, "max_loss_hkd": -10335.0, "net_debit_hkd": 10335.0, "expected_value_hkd": -341.0, "value_ratio": -0.033, "capital_hkd": 100000.0, "capital_utilization_pct": 10.33, "iv_minus_hv_pct": 3.41}, "probability": {"available": true, "win_rate_pct": 40.7, "loss_rate_pct": 59.3, "expected_value_per_point": -6.82, "dte_days": 30, "note": "模型估算：real-world lognormal（μ=0, σ=HV20, T=30/252年），唔係預測；未計股息/費用/提前行使"}, "rating": {"grade": "絕對不行", "score": 28.4, "explain": "按目前數據計出嘅勝率/值博率都唔理想；結構上唔值得執行。"}, "assumptions": ["勝率：real-world lognormal（μ=0, σ=HV20），按 DTE 以 √T 縮放；模型估算非預測", "期權價：Black-Scholes 理論價（σ=HKEX IV, r=4%），非實際市場報價", "不計股息、交易費、滑點、提前行使；港股個股期權實際為美式", "評級分數 = 本工作台預設加權規則（勝率 40 / 值博 35 / IV-HV 15 / 基本 10），非市場共識", "本分析只做公開數據整理同數理評級，唔係個人化投資建議"], "sources": ["Yahoo chart API yahoo_hsi（現價＋HV）", "HKEX HSIO 日報（IV 中位數）"], "generated_at": "2026-11-23 17:46:45 HKT"}, "templates": {"long_call": {"name": "買入認購（Long Call）", "outlook": "強烈看升", "note": "", "legs": [["C", "B", "k1", 1]]}, "long_put": {"name": "買入認沽（Long Put）", "outlook": "強烈看跌", "note": "", "legs": [["P", "B", "k1", 1]]}, "bull_call_spread": {"name": "牛市認購價差（Bull Call Spread）", "outlook": "溫和看升", "note": "Max gain = K2−K1−淨權利金；Breakeven = K1+淨權利金（Investopedia CAL 口訣）", "legs": [["C", "B", "k1", 1], ["C", "S", "k2", 1]]}, "bear_put_spread": {"name": "熊市認沽價差（Bear Put Spread）", "outlook": "溫和看跌", "note": "Max gain = K2−K1−淨權利金；Breakeven = K2−淨權利金（Investopedia PSH 口訣）", "legs": [["P", "B", "k2", 1], ["P", "S", "k1", 1]]}, "long_straddle": {"name": "买入跨式（Long Straddle）", "outlook": "預期大波動、方向不明", "note": "", "legs": [["C", "B", "k1", 1], ["P", "B", "k1", 1]]}, "long_strangle": {"name": "买入寬跨式（Long Strangle）", "outlook": "預期極端大波動", "note": "", "legs": [["C", "B", "k2", 1], ["P", "B", "k1", 1]]}, "iron_condor": {"name": "鐵鷹（Iron Condor）", "outlook": "預期區間震盪", "note": "Max gain = 淨收權利金；Max loss = 翼寬 − 淨收權利金", "legs": [["P", "B", "k1", 1], ["P", "S", "k2", 1], ["C", "S", "k3", 1], ["C", "B", "k4", 1]]}}, "built_at": "2026-11-23 17:46:45 HKT"};
+const CTX = DATA.context;
+const TPL = DATA.templates;
+const $ = id => document.getElementById(id);
+
+// ---------- 數學（與 strategy_engine.py 對照）----------
+function erf(x){
+  const s=x<0?-1:1; x=Math.abs(x);
+  const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911;
+  const t=1/(1+p*x);
+  const y=1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return s*y;
+}
+function ncdf(x){return .5*(1+erf(x/Math.SQRT2));}
+function npdf(x){return Math.exp(-.5*x*x)/Math.sqrt(2*Math.PI);}
+function bs(cp,S,K,T,sigPct,r=0.04){
+  const sig=Math.max(sigPct,.5)/100; T=Math.max(T,1/365);
+  if(S<=0||K<=0)return 0;
+  const d1=(Math.log(S/K)+(r+.5*sig*sig)*T)/(sig*Math.sqrt(T));
+  const d2=d1-sig*Math.sqrt(T);
+  return cp==='C' ? Math.max(0,S*ncdf(d1)-K*Math.exp(-r*T)*ncdf(d2))
+                  : Math.max(0,K*Math.exp(-r*T)*ncdf(-d2)-S*ncdf(-d1));
+}
+function legPay(l,S){const intr=l.cp==='C'?Math.max(S-l.k,0):Math.max(l.k-S,0);return l.q*(l.a==='B'?intr-l.prem:l.prem-intr);}
+function payoff(legs,S){return legs.reduce((a,l)=>a+legPay(l,S),0);}
+
+function analyze(legs, S0, hv, iv, dte, mult, capital){
+  const T=Math.max(dte,1)/365;
+  // 盈虧平衡
+  const lo=S0*.1, hi=S0*3, steps=3000, grid=[], vals=[];
+  for(let i=0;i<=steps;i++){const s=lo+(hi-lo)*i/steps;grid.push(s);vals.push(payoff(legs,s));}
+  const be=[];
+  for(let i=1;i<vals.length;i++){
+    if(vals[i-1]===0)be.push(grid[i-1]);
+    if(vals[i-1]*vals[i]<0){
+      let a=grid[i-1],b=grid[i];
+      for(let n=0;n<50;n++){const m=(a+b)/2; if(payoff(legs,a)*payoff(legs,m)<=0)b=m;else a=m;}
+      be.push((a+b)/2);
+    }
+  }
+  const bes=[]; be.forEach(x=>{if(!bes.length||Math.abs(x-bes[bes.length-1])>S0*.001)bes.push(x);});
+
+  // 最大損益（點數 → HKD）
+  let mx=-1e18,mn=1e18;
+  const upper=S0*5;
+  for(let i=0;i<=4000;i++){const s=i===0?0:upper*i/4000;const v=payoff(legs,s);if(v>mx)mx=v;if(v<mn)mn=v;}
+  const netDebitPts=legs.reduce((a,l)=>a+(l.a==='B'?1:-1)*l.prem*l.q,0);
+
+  // 勝率（real-world lognormal μ=0, σ=HV, T=dte/252）
+  const sig=hv/100, Tp=Math.max(dte,1)/252;
+  const plo=S0*.2,phi=S0*3,N=2400,dS=(phi-plo)/N;
+  const muLn=Math.log(S0)-.5*sig*sig*Tp, sdLn=sig*Math.sqrt(Tp);
+  let tot=0,win=0,ev=0;
+  for(let i=0;i<=N;i++){
+    const s=plo+dS*i, z=(Math.log(s)-muLn)/sdLn;
+    const pdf=npdf(z)/(s*sdLn), mass=pdf*dS, pnl=payoff(legs,s);
+    tot+=mass; if(pnl>0)win+=mass; ev+=mass*pnl;
+  }
+  const winPct=tot>0?win/tot*100:0;
+  const evPts=tot>0?ev/tot:0;
+
+  const evHkd=evPts*mult;
+  const maxpHkd=mx*mult, maxlHkd=mn*mult, netHkd=netDebitPts*mult;
+  const denom=maxlHkd<0?Math.abs(maxlHkd):Math.max(Math.abs(netHkd),1);
+  const vr=denom?evHkd/denom:0;
+  const capUtil=capital?Math.abs(netHkd)/capital*100:0;
+  const gap=iv-hv;
+
+  // 評級（與 _rating_impl 對照）
+  let score=0;
+  score+=Math.max(0,Math.min(40,(winPct-30)/50*40));
+  score+=Math.max(0,Math.min(35,vr*120));
+  score+=Math.max(0,15-Math.abs(gap)*1.5);
+  score+=10; score=Math.min(100,score);
+  let grade,explain;
+  if(score>=72){grade='放心去馬';explain='模型估算嘅勝率同值博率都喺較佳區間，IV/HV 差距細；可再核對實際報價同流動性。';}
+  else if(score>=55){grade='等等睇睇';explain='結構唔差，但勝率或值博率未見突出；建議等報價/波幅更清晰再判斷。';}
+  else if(score>=38){grade='我有保留';explain='勝率或期望回報偏弱，或 IV 相對 HV 明顯偏貴；需要注意風險。';}
+  else{grade='絕對不行';explain='按目前數據計出嘅勝率/值博率都唔理想；結構上唔值得執行。';}
+
+  return {bes,mx,mn,netDebitPts,winPct,lossPct:100-winPct,evHkd,maxpHkd,maxlHkd,
+          netHkd,vr,capUtil,gap,score:Math.round(score*10)/10,grade,explain,
+          legs,grid,vals,S0};
+}
+
+// ---------- 繪圖 ----------
+function draw(r){
+  const W=800,H=300,L=62,R=18,T=18,B=40;
+  const pw=W-L-R, ph=H-T-B;
+  const xs=r.grid.filter((_,i)=>i%3===0), ys=r.vals.filter((_,i)=>i%3===0);
+  const xmin=Math.min(r.S0*.8,...xs), xmax=Math.max(r.S0*1.2,...xs);
+  let ymin=Math.min(0,...ys), ymax=Math.max(0,...ys);
+  const pad=(ymax-ymin)*.08||1; ymin-=pad;ymax+=pad;
+  const X=s=>L+(s-xmin)/(xmax-xmin)*pw;
+  const Y=v=>T+ph-(v-ymin)/(ymax-ymin)*ph;
+  let s=`<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  // 零軸
+  s+=`<line x1="${L}" y1="${Y(0)}" x2="${W-R}" y2="${Y(0)}" stroke="#b8c0d0" stroke-dasharray="4 4"/>`;
+  s+=`<text x="${L-8}" y="${Y(0)+4}" text-anchor="end" font-size="10" fill="#8a94a6">0</text>`;
+  // 獲利/虧損背景帶
+  s+=`<rect x="${L}" y="${T}" width="${pw}" height="${Math.max(0,Y(0)-T)}" fill="rgba(15,157,110,.055)"/>`;
+  s+=`<rect x="${L}" y="${Y(0)}" width="${pw}" height="${Math.max(0,T+ph-Y(0))}" fill="rgba(220,63,78,.05)"/>`;
+  // 損益折線（分段上色）
+  for(let i=1;i<xs.length;i++){
+    const c=Math.min(ys[i-1],ys[i])>=0?'#0f9d6e':(Math.max(ys[i-1],ys[i])<=0?'#dc3f4e':'#8b93a6');
+    s+=`<line x1="${X(xs[i-1])}" y1="${Y(ys[i-1])}" x2="${X(xs[i])}" y2="${Y(ys[i])}" stroke="${c}" stroke-width="2.4"/>`;
+  }
+  // 現價線
+  s+=`<line x1="${X(r.S0)}" y1="${T}" x2="${X(r.S0)}" y2="${T+ph}" stroke="#2f5fe0" stroke-width="1.6" stroke-dasharray="5 3"/>`;
+  s+=`<text x="${X(r.S0)+5}" y="${T+13}" font-size="10" fill="#2f5fe0">現價 ${r.S0.toFixed(0)}</text>`;
+  // 盈虧平衡
+  r.bes.forEach(b=>{
+    if(b<xmin||b>xmax)return;
+    s+=`<line x1="${X(b)}" y1="${T}" x2="${X(b)}" y2="${T+ph}" stroke="#e08b16" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+    s+=`<text x="${X(b)+4}" y="${T+ph-6}" font-size="10" fill="#e08b16">BE ${b.toFixed(0)}</text>`;
+  });
+  // X 軸刻度
+  for(let i=0;i<=4;i++){
+    const v=xmin+(xmax-xmin)*i/4;
+    s+=`<text x="${X(v)}" y="${H-12}" text-anchor="middle" font-size="10" fill="#8a94a6">${v.toFixed(0)}</text>`;
+  }
+  s+=`<text x="${L}" y="${T-5}" font-size="10" fill="#8a94a6">損益(點)</text>`;
+  $('payoff').innerHTML=s;
+}
+
+// ---------- 主流程 ----------
+function fmt(n,d=0){return n==null?'—':Number(n).toLocaleString('zh-Hant',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function color(v){return v>0?'var(--good)':(v<0?'var(--bad)':'var(--ink)');}
+
+function run(){
+  const key=$('strategy').value, tpl=TPL[key], und=$('underlying').value;
+  const ctx=und==='HSI'?CTX:Object.assign({},CTX,{spot:CTX.spot,iv_median_pct:CTX.iv_median_pct});
+  const S0=ctx.spot, hv=ctx.hv20_pct, iv=ctx.iv_median_pct||25, mult=ctx.multiplier||50;
+  const k=['k1','k2','k3','k4'].map(id=>parseFloat($(id).value));
+  const dte=Math.max(1,parseInt($('dte').value)||30), capital=parseFloat($('capital').value)||100000;
+  const legs=[];
+  for(const [cp,a,ki,q] of tpl.legs){
+    const idx={k1:0,k2:1,k3:2,k4:3}[ki], K=k[idx];
+    if(!K||isNaN(K)){alert('請輸入 '+ki.toUpperCase()+' 行使價');return;}
+    legs.push({cp,a,k:K,q,prem:bs(cp,S0,K,dte/365,iv)});
+  }
+  const r=analyze(legs,S0,hv,iv,dte,mult,capital);
+
+  // 評級
+  $('vgrade').textContent=r.grade; $('vscore').textContent='評分 '+r.score.toFixed(1)+' / 100';
+  $('vexplain').textContent=r.explain;
+  const vc=r.score>=72?'linear-gradient(135deg,#0f9d6e,#0b7f78)':
+           r.score>=55?'linear-gradient(135deg,#2f5fe0,#7048d8)':
+           r.score>=38?'linear-gradient(135deg,#e08b16,#c26a1a)':
+                        'linear-gradient(135deg,#dc3f4e,#9e2733)';
+  $('verdict').style.background=vc;
+  $('mWin').textContent=r.winPct.toFixed(1)+'%';
+  $('mLoss').textContent=r.lossPct.toFixed(1)+'%';
+  $('mVr').textContent=r.vr.toFixed(3);
+  $('mCap').textContent=r.capUtil.toFixed(2)+'%';
+
+  const rows=[
+    ['現價','HKD '+fmt(S0,2),'Yahoo chart API（'+ctx.spot_date+'）'],
+    ['歷史波幅 HV20',hv+'%','Yahoo 收市價計（real-world，勝率分布用）'],
+    ['引申波幅 IV',iv+'%','HKEX 日報 Top 10 中位數（期權定價用）'],
+    ['IV − HV',r.gap.toFixed(2)+' pct','兩者差距，反映市場預期溢價'],
+    ['到期天數',dte+' 日','用戶輸入'],
+    ['盈虧平衡',r.bes.length?r.bes.map(x=>fmt(x,1)).join(' / '):'區間內無','到期損益=0 嘅標的價'],
+    ['最大盈利','HKD '+fmt(r.maxpHkd),'到期損益圖最高點 × 合約乘數'],
+    ['最大虧損','HKD '+fmt(r.maxlHkd),'到期損益圖最低點 × 合約乘數'],
+    ['淨權利金','HKD '+fmt(r.netHkd),'買入−賣出（正=借方，負=貸方）'],
+    ['期望值 EV','HKD '+fmt(r.evHkd),'勝率分布加權平均損益（模型估算）'],
+    ['值博率',r.vr.toFixed(3),'EV ÷ 最大風險；>0 先係數理上正值博'],
+    ['資金使用率',r.capUtil.toFixed(2)+'%','|淨權利金| ÷ 可用本金，非券商按金'],
+  ];
+  $('metricTable').innerHTML=rows.map(x=>`<tr><td>${x[0]}</td><td class="num"><b>${x[1]}</b></td><td class="note">${x[2]}</td></tr>`).join('');
+
+  $('legTable').innerHTML=r.legs.map((l,i)=>{
+    const hkd=l.prem*mult*l.q;
+    return `<tr><td>${i+1}</td><td>${l.cp==='C'?'認購 Call':'認沽 Put'} · ${l.a==='B'?'買入':'賣出'} ${l.q}張</td>
+      <td class="num">${fmt(l.k)}</td><td class="num">${fmt(l.prem,2)}</td>
+      <td class="num">${fmt(hkd)}</td><td class="note">BS（σ=IV）</td></tr>`;
+  }).join('');
+
+  $('assumptions').innerHTML='<b>模型假設：</b>'+[
+    ...(CTX.mixed_date_warning?['<b style="color:#b45309">日期不一致：'+CTX.mixed_date_warning+'</b>']:[]),
+    '勝率：real-world lognormal（μ=0, σ=HV20, T='+dte+'/252年），按 DTE 計；模型估算非預測',
+    '期權價：Black-Scholes 理論價（σ=HKEX IV, r=4%），非實際市場報價',
+    '不計股息、交易費、滑點、提前行使；港股個股期權實際為美式',
+    '評級：勝率 40 / 值博 35 / IV-HV 15 / 基本 10，本工作台預設加權，非市場共識',
+  ].map(x=>'• '+x).join('<br>');
+  $('src').textContent='數據來源：'+CTX.sources.join('；')+'　｜　建置：'+DATA.built_at;
+  draw(r);
+}
+
+function loadDemo(){
+  $('strategy').value='bull_call_spread';
+  const s=CTX.spot, step=500, k1=Math.round(s/step)*step;
+  $('k1').value=k1; $('k2').value=k1+step; $('k3').value=''; $('k4').value='';
+  $('dte').value=30; $('capital').value=100000;
+  $('stratNote').textContent=TPL['bull_call_spread'].note||'';
+  run();
+}
+
+// 初始化
+(function init(){
+  $('hdrMeta').textContent='數據日期 '+CTX.spot_date+'　｜　現價 '+CTX.spot+'　｜　HV20 '+CTX.hv20_pct+'%　｜　IV '+CTX.iv_median_pct+'%　｜　'+DATA.built_at;
+  $('market').innerHTML=`<b>${CTX.label} ${CTX.spot}</b><div class="kv">
+    <span>收市日 ${CTX.spot_date}</span><span>HV20 ${CTX.hv20_pct}%</span>
+    <span>HV60 ${CTX.hv60_pct}%</span><span>IV ${CTX.iv_median_pct}%</span>
+    <span>IV 來源 ${CTX.iv_source_date||'未標註'}</span>
+    <span>合約乘數 ${CTX.multiplier}</span></div>`+
+    (CTX.mixed_date_warning?`<div class="warnbox" style="margin-top:8px">⚠️ ${CTX.mixed_date_warning}</div>`:'');
+  $('strategy').innerHTML=Object.entries(TPL).map(([k,v])=>`<option value="${k}">${v.name}（${v.outlook}）</option>`).join('');
+  $('strategy').onchange=()=>{$('stratNote').textContent=TPL[$('strategy').value].note||'';};
+  loadDemo();
+})();
+</script>
+</body>
+</html>
