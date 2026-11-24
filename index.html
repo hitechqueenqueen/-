@@ -24,7 +24,7 @@
     padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
   .card.a2::before{background:#8b5cf6} .card.a3::before{background:var(--warn)}
-  .card.a4::before{background:#0ea5a4} .card.ph::before{background:#b8c0d0}
+  .card.a4::before{background:#0ea5a4} .card.a5::before{background:linear-gradient(180deg,#7048d8,#b83fa0)} .card.ph::before{background:#b8c0d0}
   .card.lead{background:linear-gradient(135deg,#1e3a8a 0%,#2f5fe0 100%);border:none;color:#fff}
   .card.lead::before{display:none}
   .card.lead h2,.card.lead .desc{color:#fff}
@@ -70,15 +70,15 @@
   <div class="grid">
     <div class="card lead section">
       <h2>👑 葉皇后 · 主控（領軍） <span class="status" id="s_lead" style="background:rgba(255,255,255,.2);color:#fff">純調度</span></h2>
-      <div class="desc">用戶一句指令 → 拆解派發 → 監控超時 → 匯總。純調度型 Agent，唔做分析、唔畀投資建議。四位助手共用同一數據層。</div>
+      <div class="desc">用戶一句指令 → 拆解派發 → 監控超時 → 匯總。純調度型 Agent，唔做分析、唔畀個人化投資建議。五位助手共用同一數據層。</div>
       <div class="lead-flow">
         <div class="node">用戶指令</div><span class="arw">→</span>
         <div class="node">葉皇后拆解</div><span class="arw">→</span>
         <div class="node">① 下載（先）</div><span class="arw">→</span>
-        <div class="node">②③④ 並行</div><span class="arw">→</span>
+        <div class="node">②③④⑤ 並行</div><span class="arw">→</span>
         <div class="node">葉皇后匯總</div>
       </div>
-      <div class="desc" style="margin-top:10px">調度順序：助手一必須先完成（係下游數據源）；二／三／四並行；任何一位失敗唔阻塞其餘，主控如實報告。</div>
+      <div class="desc" style="margin-top:10px">調度順序：助手一必須先完成（係下游數據源）；二／三／四／五並行；任何一位失敗唔阻塞其餘，主控如實報告。助手五需用戶提供建倉指領。</div>
     </div>
 
     <div class="card">
@@ -111,6 +111,15 @@
       <div class="desc" id="vol_note" style="margin-top:10px">—</div>
     </div>
 
+    <div class="card a5">
+      <h2>⑤ 期權策略分析和解說 <span class="status" id="s5">待指領</span></h2>
+      <div class="desc">按建倉指領出 payoff／勝率敗率／值博率／資金使用率，再給四級策略評級。</div>
+      <div class="num" id="st_grade">—<span class="unit">策略評級</span></div>
+      <div class="desc" id="st_note">需用戶提供：策略＋行使價＋到期日。可按「載入示範」即時睇效果。</div>
+      <table><thead><tr><th>指標</th><th class="r">數值</th></tr></thead><tbody id="st_table"></tbody></table>
+      <div class="warnbox" style="margin-top:10px">評級係<b>策略結構嘅數理評級</b>（分數 Band 標籤），唔係個人化買賣建議；勝率為模型估算，非預測。</div>
+    </div>
+
     <div class="card section">
       <h3>數據流（手動觸發 · 幂等覆蓋）</h3>
       <div class="flow">
@@ -118,7 +127,7 @@
         <div class="step">下載 + 入校驗（大小/列頭）</div><span class="arrow">→</span>
         <div class="step">raw/ 原始檔留底</div><span class="arrow">→</span>
         <div class="step">parsed/ 結構化</div><span class="arrow">→</span>
-        <div class="step">四位助手分析</div><span class="arrow">→</span>
+        <div class="step">五位助手分析</div><span class="arrow">→</span>
         <div class="step">dashboard_data.json</div><span class="arrow">→</span>
         <div class="step">本頁（清走舊版）</div>
       </div>
@@ -135,7 +144,7 @@
 </div>
 
 <script>
-const DATA = /*__DASHBOARD_DATA__*/null;
+const DATA = {"meta": {"date": "2026-11-23", "run_at": "2026-11-23 16:50:06 HKT", "sources": {"HSIO": {"name": "恒指期權", "status": "http_error"}, "HHIO": {"name": "國指期權", "status": "http_error"}, "MHIO": {"name": "小型恒指期權", "status": "http_error"}, "HTIO": {"name": "恒生科技指數期權", "status": "http_error"}, "HSIWO": {"name": "每周恒指期權", "status": "http_error"}, "PHHO": {"name": "恒指期貨期權", "status": "http_error"}, "DQE": {"name": "股票期權全日報", "status": "http_error"}, "EXERCISE": {"name": "股票期權行使紀錄", "status": "ok"}, "MERT_SEOCH": {"name": "mert_seoch", "status": "ok"}, "MERT_HKCC": {"name": "mert_hkcc", "status": "ok"}, "YAHOO_%5EHSI": {"name": "%5EHSI", "status": "ok"}, "YAHOO_%5EHSCE": {"name": "%5EHSCE", "status": "ok"}}, "leader": {"name": "葉皇后", "role": "主控（領軍）— 純調度", "scope": "拆解指令、派發五位助手、監控超時、匯總；唔做分析、唔畀個人化投資建議", "dispatch_order": "助手一先，二／三／四／五並行", "version": "v1.2.0"}}, "assistant1_download": {"available": true, "sources": {"HSIO": {"name": "恒指期權", "status": "http_error"}, "HHIO": {"name": "國指期權", "status": "http_error"}, "MHIO": {"name": "小型恒指期權", "status": "http_error"}, "HTIO": {"name": "恒生科技指數期權", "status": "http_error"}, "HSIWO": {"name": "每周恒指期權", "status": "http_error"}, "PHHO": {"name": "恒指期貨期權", "status": "http_error"}, "DQE": {"name": "股票期權全日報", "status": "http_error"}, "EXERCISE": {"name": "股票期權行使紀錄", "status": "ok"}, "MERT_SEOCH": {"name": "mert_seoch", "status": "ok"}, "MERT_HKCC": {"name": "mert_hkcc", "status": "ok"}, "YAHOO_%5EHSI": {"name": "%5EHSI", "status": "ok"}, "YAHOO_%5EHSCE": {"name": "%5EHSCE", "status": "ok"}}, "iv_series_total": 0, "note": "原始檔全部存 data/raw/，可抽樣核對。IV%/未平倉量欄位為 HKEX 日報原文。"}, "assistant2_exercise": {"available": true, "totals": {"exercised_shares": 76475170, "turnover": 6428996660, "_note": "總行使股數由 580 條明細求和（官方總結行格式唔穩定，已棄用）；turnover 仍取自官方總結行。"}, "top_strikes": [{"code": "9988", "name": "BABA-W", "strike": 130.0, "shares": 3277500}, {"code": "9988", "name": "BABA-W", "strike": 112.5, "shares": 2327500}, {"code": "1024", "name": "KUAISHOU-W", "strike": 40.0, "shares": 1769500}, {"code": "9988", "name": "BABA-W", "strike": 110.0, "shares": 1533500}, {"code": "9988", "name": "BABA-W", "strike": 115.0, "shares": 1485000}, {"code": "9988", "name": "BABA-W", "strike": 85.0, "shares": 1308500}, {"code": "2318", "name": "PING AN", "strike": 55.0, "shares": 1035000}, {"code": "762", "name": "CHINA UNICOM", "strike": 5.75, "shares": 1026000}, {"code": "968", "name": "XINYI SOLAR", "strike": 2.5, "shares": 1026000}, {"code": "1339", "name": "PICC GROUP", "strike": 5.75, "shares": 1000000}], "series_count": 580, "source": "HKEX stkoptexe.htm（每日更新，當日全市場股票期權行使明細）", "note": "行使股數／成交額均為交易所當日公佈值；本工作台只做整理排行，唔做推測。"}, "assistant3_margin": {"available": true, "product_count": 257, "sample_products": ["A50", "AAC", "ACC", "AIA", "AIR", "AKS", "ALA", "ALB", "ALC", "ALH", "AMC", "ANA", "ASM", "BCM", "BEA", "BIU", "BLI", "BOC", "BOM", "BRT"], "applicable_dates": ["23/11/2026"], "disclaimer": "MERT 為估算參考表，非券商實收按金。HKEX 原文：實際按金由交易所參與者絕對酌情決定，只不得低於規則最低要求；券商可收更高。", "holdings_result": [], "holdings_note": "未提供持倉，只顯示 MERT 覆蓋概況。要計自己按金，請填 holdings.csv（見使用說明）。"}, "assistant4_vol": {"historical_volatility": {"%5EHSI": {"hv20_pct": 21.59, "hv60_pct": 17.76, "last_close": 22383.740234375, "last_date": "2026-11-23", "source": "Yahoo Finance chart API（^HSI / ^HSCE，日線）"}, "%5EHSCE": {"hv20_pct": 21.36, "hv60_pct": 17.85, "last_close": 7527.97998046875, "last_date": "2026-11-23", "source": "Yahoo Finance chart API（^HSI / ^HSCE，日線）"}}, "implied_volatility": [{"product": "HSIO", "product_name": "恒指期權", "iv_median_pct": 25.0, "series_count": 10}, {"product": "HHIO", "product_name": "國指期權", "iv_median_pct": 23.5, "series_count": 10}, {"product": "MHIO", "product_name": "小型恒指期權", "iv_median_pct": 22.0, "series_count": 10}, {"product": "HTIO", "product_name": "恒生科技指數期權", "iv_median_pct": 33.5, "series_count": 10}, {"product": "PHHO", "product_name": "恒指期貨期權", "iv_median_pct": 22.0, "series_count": 10}], "note": "HV 用收市價對數收益計年化；IV 直接取 HKEX 日報公佈嘅 IV% 欄，唔係自己反推。兩者口徑不同，只作並排參考。"}, "placeholders": {"oi_anomaly": "未平倉量異動排行（待接 DTOP zip）", "money_flow": "期權鏈資金流（待接大成交額系列）", "margin_call": "追繳按金預警（待有持倉＋券商按金口徑）"}, "assistant5_strategy": {"available": true, "is_demo": true, "strategy": "牛市認購價差（Bull Call Spread）", "grade": "絕對不行", "score": 28.4, "explain": "按目前數據計出嘅勝率/值博率都唔理想；結構上唔值得執行。", "win_rate_pct": 40.7, "loss_rate_pct": 59.3, "value_ratio": -0.033, "capital_utilization_pct": 10.33, "max_profit_hkd": 14665.0, "max_loss_hkd": -10335.0, "breakeven_points": [22706.7], "mixed_date_warning": "現價/HV 為 2026-11-23（Yahoo），但 IV 因當日 HKEX 日報未出／下載失敗，仍沿用上一交易日 cache；兩者日期不同，評級只作參考，唔好當係同一日定價。", "iv_source_date": "最近可得 HKEX 日報（非 2026-11-23）", "note": "此為示範（現價附近行使價）；實際評級需用戶提供建倉指領"}};
 
 function n(x){ return x==null ? '—' : Number(x).toLocaleString('zh-Hant'); }
 function setStatus(id, ok){
@@ -195,6 +204,24 @@ function render(){
   ).join('') || '<tr><td colspan="4">暫無數據</td></tr>';
   document.getElementById('vol_note').textContent=v.note||'';
 
+  // A5
+  const a5=DATA.assistant5_strategy||{};
+  setStatus('s5', !!a5.available);
+  document.getElementById('s5').textContent = a5.available ? '示範' : '待指領';
+  if(a5.available){
+    document.getElementById('st_grade').innerHTML=`${a5.grade}<span class="unit">${a5.score} / 100</span>`;
+    document.getElementById('st_note').textContent=(a5.strategy||'')+' — '+(a5.note||'');
+    if(a5.mixed_date_warning){
+      document.getElementById('st_note').innerHTML += '<br><b style="color:#b45309">⚠ '+a5.mixed_date_warning+'</b>';
+    }
+    document.getElementById('st_table').innerHTML=[
+      ['勝率 / 敗率', a5.win_rate_pct+'% / '+a5.loss_rate_pct+'%'],
+      ['值博率 (EV/風險)', a5.value_ratio],
+      ['資金使用率', a5.capital_utilization_pct+'%'],
+      ['最大盈利 / 虧損', n(a5.max_profit_hkd)+' / '+n(a5.max_loss_hkd)],
+    ].map(x=>`<tr><td>${x[0]}</td><td class="r">${x[1]==null?'—':x[1]}</td></tr>`).join('');
+  }
+
   // 預留
   document.getElementById('placeholders').innerHTML=Object.entries(DATA.placeholders||{})
     .map(([k,t])=>`<span class="pill">${t}</span>`).join('');
@@ -202,7 +229,7 @@ function render(){
   // 頁尾
   document.getElementById('foot').innerHTML =
     `數據來源：香港交易所（HKEX）公開每日市場報告／MERT 按金估算表；Historical Volatility 由 Yahoo Finance chart API 之 ^HSI / ^HSCE 日線收市價計出。`+
-    `<br>免責：本頁只作公開資料整理與估算，不構成投資建議；MERT 為估算參考，非券商實收按金。市場有風險，投資需謹慎。`;
+    `<br>免責：本頁只作公開資料整理與估算，不構成投資建議；MERT 為估算參考，非券商實收按金；助理五策略評級為數理結構評級（模型估算，非預測），唔係個人化買賣建議。市場有風險，投資需謹慎。`;
 }
 render();
 </script>
